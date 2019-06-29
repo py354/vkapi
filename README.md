@@ -1,3 +1,3 @@
 ### Install package:
-$ go get -u github.com/py354/vkapi.git
+$ go get -u github.com/py354/vkapi
 #### Check examples in directory
