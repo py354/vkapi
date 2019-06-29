@@ -14,7 +14,7 @@ func (c *client) GetGroupID() int {
 	jsonR := c.Request("groups.getById", "")
 	response := getGroupIDResponse{}
 	err := json.Unmarshal(jsonR, &response)
-	checkError(err)
+	CheckError(err)
 
 	if len(response.Response) == 0 {
 		panic(fmt.Sprintf("GetGroupID() return 0 \n%s\n%#v\n", string(jsonR), c))

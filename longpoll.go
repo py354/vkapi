@@ -66,7 +66,7 @@ func (lp *longpoll) initVKParams() {
 	jsonR := lp.Request("groups.getLongPollServer", "group_id="+strconv.Itoa(lp.GetGroupID()))
 	response := getLongpollServerResponse{}
 	err := json.Unmarshal(jsonR, &response)
-	checkError(err)
+	CheckError(err)
 
 	lp.Key = response.Response.Key
 	lp.Server = response.Response.Server
@@ -76,15 +76,15 @@ func (lp *longpoll) initVKParams() {
 func (lp *longpoll) getEvents() longpollResponse {
 	url := fmt.Sprintf("%s?act=a_check&key=%s&ts=%s&wait=25", lp.Server, lp.Key, lp.TS)
 	r, err := http.Get(url)
-	checkError(err)
+	CheckError(err)
 	defer r.Body.Close()
 
 	answer, err := ioutil.ReadAll(r.Body)
-	checkError(err)
+	CheckError(err)
 
 	response := longpollResponse{}
 	err = json.Unmarshal(answer, &response)
-	checkError(err)
+	CheckError(err)
 	return response
 }
 

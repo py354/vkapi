@@ -46,7 +46,7 @@ func (c *client) Request(method, params string) []byte {
 	reader := strings.NewReader(params)
 	r, err := http.Post(rURL, "application/x-www-form-urlencoded", reader)
 	defer r.Body.Close()
-	checkError(err)
+	CheckError(err)
 
 	binAnswer, err := ioutil.ReadAll(r.Body)
 	return binAnswer

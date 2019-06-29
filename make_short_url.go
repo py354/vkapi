@@ -14,6 +14,6 @@ func (c *client) GetShortLink(url string) string {
 	jsonR := c.Request("utils.getShortLink", "url="+url2.QueryEscape(url))
 	response := getShortLinkResponse{}
 	err := json.Unmarshal(jsonR, &response)
-	checkError(err)
+	CheckError(err)
 	return response.Response.ShortURL
 }

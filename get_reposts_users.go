@@ -23,7 +23,7 @@ func (c *serviceClient) GetRepostsUsers(groupID, postID int) []int {
 		jsonR := c.Request("wall.getReposts", fmt.Sprintf(temp, groupID, postID, offset))
 		response := GetRepostsResponse{}
 		err := json.Unmarshal(jsonR, &response)
-		checkError(err)
+		CheckError(err)
 
 		if len(response.Response.Profiles) == 0 {
 			break

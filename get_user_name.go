@@ -14,6 +14,6 @@ func (c *client) GetUserName(userID int) string {
 	jsonR := c.Request("users.get", "user_ids="+strconv.Itoa(userID))
 	response := getUserNameResponse{}
 	err := json.Unmarshal(jsonR, &response)
-	checkError(err)
+	CheckError(err)
 	return response.Response[0].FirstName
 }

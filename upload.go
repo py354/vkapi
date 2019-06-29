@@ -2,7 +2,6 @@ package vkapi
 
 import (
 	"bytes"
-	"easyimage/core"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -41,7 +40,7 @@ func (c *client) getMessagesUploadServer(peerID int) (url string, albumID, group
 	r := c.Request("photos.getMessagesUploadServer", "peer_id="+strconv.Itoa(peerID))
 	response := uploadServerResponse{}
 	err := json.Unmarshal(r, &response)
-	checkError(err)
+	CheckError(err)
 	return response.Response.Url, response.Response.AlbumID, response.Response.GroupID
 }
 
@@ -50,7 +49,7 @@ func (c *client) saveMessagesPhoto(photo, hash string, server int) (int, int) {
 	r := c.Request("photos.saveMessagesPhoto", params)
 	resp := savedPhotoResponse{}
 	err := json.Unmarshal(r, &resp)
-	checkError(err)
+	CheckError(err)
 	return resp.Response[0].ID, resp.Response[0].OwnerID
 }
 
@@ -60,25 +59,25 @@ func (c *client) UploadPhoto(reader io.Reader, peerID int) string {
 	bodyBuf := &bytes.Buffer{}
 	bodyWriter := multipart.NewWriter(bodyBuf)
 	fileWriter, err := bodyWriter.CreateFormFile("photo", "test.png")
-	checkError(err)
+	CheckError(err)
 
 	_, err = io.Copy(fileWriter, reader)
-	checkError(err)
+	CheckError(err)
 
 	contentType := bodyWriter.FormDataContentType()
 	err = bodyWriter.Close()
-	checkError(err)
+	CheckError(err)
 
 	resp, err := http.Post(url, contentType, bodyBuf)
-	checkError(err)
+	CheckError(err)
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
-	checkError(err)
+	CheckError(err)
 
 	var uploaded uploadPhotoWallResponse
 	err = json.Unmarshal(body, &uploaded)
-	checkError(err)
+	CheckError(err)
 
 	mediaID, ownerID := c.saveMessagesPhoto(uploaded.Photo, uploaded.Hash, uploaded.Server)
 	return fmt.Sprintf("photo%d_%d", ownerID, mediaID)
@@ -87,7 +86,7 @@ func (c *client) UploadPhoto(reader io.Reader, peerID int) string {
 func (c *client) UploadPhotoFromPath(path string) string {
 	file, err := os.Open("/home/danis/projects/go/src/vkapi/examples/зож.jpg")
 	defer file.Close()
-	core.CheckError(err)
+	CheckError(err)
 
 	return c.UploadPhoto(file, 222691811)
 }

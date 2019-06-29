@@ -1,7 +1,6 @@
 package main
 
 import (
-	"easyimage/core"
 	"log"
 	"os"
 	"vkapi"
@@ -23,7 +22,7 @@ func main() {
 
 	// open image
 	file, err := os.Open("path_to_image.png")
-	core.CheckError(err)
+	vkapi.CheckError(err)
 
 	// download it to vk server
 	attachment := c.UploadPhoto(file, peerID)
