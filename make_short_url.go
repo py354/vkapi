@@ -10,7 +10,7 @@ type getShortLinkResponse struct {
 	Response getShortLinkData `json:"response"`
 }
 
-func (c *client) GetShortLink(url string) string {
+func (c *Client) GetShortLink(url string) string {
 	jsonR := c.Request("utils.getShortLink", "url="+url2.QueryEscape(url))
 	response := getShortLinkResponse{}
 	err := json.Unmarshal(jsonR, &response)

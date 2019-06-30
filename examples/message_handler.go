@@ -10,13 +10,13 @@ func main() {
 	token := "cd9407e6d0945b647c874fe553bf32e0021cb6c2c5366ee28e963c0b334fac867113f875eb347ff08fa92"
 
 	// client initialization
-	c := vkapi.Client(token)
+	c := vkapi.NewClient(token)
 
 	// make channel for input messages
-	inputMessages := make(chan *vkapi.Message)
+	inputMessages := make(chan *vkapi.Message, 100)
 
 	// longpoll initialization
-	lp := vkapi.Longpoll(token)
+	lp := vkapi.NewLongpoll(token)
 
 	// start listening
 	go lp.Listen(inputMessages)

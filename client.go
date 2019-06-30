@@ -14,28 +14,51 @@ const requestURL string = "https://api.vk.com/method/%s?access_token=%s&v=" + ap
 
 const sleepTime = time.Second / 20
 
+type Request struct {
+	MethodName string
+	params string
+}
+
 func getRequestUrl(method, token string) string {
 	return fmt.Sprintf(requestURL, method, token)
 }
 
-type client struct {
+type Client struct {
 	token       string
 	lastRequest time.Time
+
+	workWithPool bool
+	requestsChan chan Request
 }
 
-type serviceClient struct {
-	client
+type ServiceClient struct {
+	Client
 }
 
-func Client(token string) *client {
-	return &client{token: token}
+func NewClient(token string) *Client {
+	return &Client{token: token}
 }
 
-func ServiceClient(token string) *client {
-	return &client{token: token}
+func NewServiceClient(token string) *ServiceClient {
+	return &ServiceClient{*NewClient(token)}
 }
 
-func (c *client) Request(method, params string) []byte {
+func (c *Client) ActivatePool(requestsChan chan Request) {
+	c.requestsChan = requestsChan
+	c.workWithPool = true
+}
+
+func (c *Client) DisablePool() {
+	c.workWithPool = false
+}
+
+func (c *Client) ListenQuery() {
+	for req := range c.requestsChan {
+		c.Request(req.MethodName, req.params)
+	}
+}
+
+func (c *Client) request(method, params string) []byte {
 	left := time.Since(c.lastRequest)
 	if left < sleepTime {
 		time.Sleep(sleepTime - left)
@@ -50,4 +73,16 @@ func (c *client) Request(method, params string) []byte {
 
 	binAnswer, err := ioutil.ReadAll(r.Body)
 	return binAnswer
+}
+
+func (c *Client) Request(method, params string) []byte {
+	if !c.workWithPool {
+		return c.request(method, params)
+	} else {
+		c.requestsChan <- Request{
+			MethodName: method,
+			params:     params,
+		}
+		return []byte{}
+	}
 }

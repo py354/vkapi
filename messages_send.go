@@ -8,12 +8,12 @@ import (
 )
 
 // messageTypes: sticker, text + kb + attachment
-func (c *client) SendSticker(peerID int, stickerID int) {
+func (c *Client) SendSticker(peerID int, stickerID int) {
 	params := fmt.Sprintf("peer_id=%d&sticker_id=%d", peerID, stickerID)
 	c.Request("messages.send", params)
 }
 
-func (c *client) sendMessage(dst string, message, keyboard, attachment string) []byte {
+func (c *Client) sendMessage(dst string, message, keyboard, attachment string) []byte {
 	params := dst + "&random_id=&"
 
 	if message != "" {
@@ -30,11 +30,11 @@ func (c *client) sendMessage(dst string, message, keyboard, attachment string) [
 	return c.Request("messages.send", params)
 }
 
-func (c *client) SendMessage(peerID int, message, keyboard, attachment string) []byte {
+func (c *Client) SendMessage(peerID int, message, keyboard, attachment string) []byte {
 	return c.sendMessage("peer_id="+strconv.Itoa(peerID), message, keyboard, attachment)
 }
 
-func (c *client) Broadcast(userIDs, message, keyboard, attachment string) {
+func (c *Client) Broadcast(userIDs, message, keyboard, attachment string) {
 	c.sendMessage("userIDs="+userIDs, message, keyboard, attachment)
 }
 

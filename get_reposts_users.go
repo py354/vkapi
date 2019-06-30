@@ -14,7 +14,7 @@ type GetRepostsResponse struct {
 	Response ItemsResp `json:"response"`
 }
 
-func (c *serviceClient) GetRepostsUsers(groupID, postID int) []int {
+func (c *ServiceClient) GetRepostsUsers(groupID, postID int) []int {
 	userIDs := make([]int, 0, 1000)
 
 	temp := "owner_id=-%d&post_id=%d&count=1000&offset=%d"

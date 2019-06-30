@@ -7,8 +7,8 @@ import (
 	"strconv"
 )
 
-type longpoll struct {
-	*client
+type Longpoll struct {
+	*Client
 	Key    string
 	Server string
 	TS     string
@@ -58,11 +58,11 @@ type getLongpollServerResponse struct {
 	Response getLongPollServerData `json:"response"`
 }
 
-func Longpoll(token string) *longpoll {
-	return &longpoll{client: Client(token)}
+func NewLongpoll(token string) *Longpoll {
+	return &Longpoll{Client: NewClient(token)}
 }
 
-func (lp *longpoll) initVKParams() {
+func (lp *Longpoll) initVKParams() {
 	jsonR := lp.Request("groups.getLongPollServer", "group_id="+strconv.Itoa(lp.GetGroupID()))
 	response := getLongpollServerResponse{}
 	err := json.Unmarshal(jsonR, &response)
@@ -73,7 +73,7 @@ func (lp *longpoll) initVKParams() {
 	lp.TS = response.Response.Ts
 }
 
-func (lp *longpoll) getEvents() longpollResponse {
+func (lp *Longpoll) getEvents() longpollResponse {
 	url := fmt.Sprintf("%s?act=a_check&key=%s&ts=%s&wait=25", lp.Server, lp.Key, lp.TS)
 	r, err := http.Get(url)
 	CheckError(err)
@@ -89,7 +89,7 @@ func (lp *longpoll) getEvents() longpollResponse {
 }
 
 // support only "message_new" event from users
-func (lp *longpoll) Listen(inputMessages chan<- *Message) {
+func (lp *Longpoll) Listen(inputMessages chan<- *Message) {
 	lp.initVKParams()
 
 	for {

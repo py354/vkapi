@@ -10,7 +10,7 @@ type getGroupIDResponse struct {
 	Response []getGroupIDData `json:"response"`
 }
 
-func (c *client) GetGroupID() int {
+func (c *Client) GetGroupID() int {
 	jsonR := c.Request("groups.getById", "")
 	response := getGroupIDResponse{}
 	err := json.Unmarshal(jsonR, &response)

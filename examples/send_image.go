@@ -14,7 +14,7 @@ func main() {
 	peerID := 222691811
 
 	// client initialization
-	c := vkapi.Client(token)
+	c := vkapi.NewClient(token)
 
 	// send message with text "hello"
 	response := c.SendMessage(peerID, "hello", "", "")

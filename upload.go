@@ -36,7 +36,7 @@ type savedPhotoResponse struct {
 	Response []savedPhoto `json:"response"`
 }
 
-func (c *client) getMessagesUploadServer(peerID int) (url string, albumID, groupID int) {
+func (c *Client) getMessagesUploadServer(peerID int) (url string, albumID, groupID int) {
 	r := c.Request("photos.getMessagesUploadServer", "peer_id="+strconv.Itoa(peerID))
 	response := uploadServerResponse{}
 	err := json.Unmarshal(r, &response)
@@ -44,7 +44,7 @@ func (c *client) getMessagesUploadServer(peerID int) (url string, albumID, group
 	return response.Response.Url, response.Response.AlbumID, response.Response.GroupID
 }
 
-func (c *client) saveMessagesPhoto(photo, hash string, server int) (int, int) {
+func (c *Client) saveMessagesPhoto(photo, hash string, server int) (int, int) {
 	params := fmt.Sprintf("photo=%s&server=%d&hash=%s", photo, server, hash)
 	r := c.Request("photos.saveMessagesPhoto", params)
 	resp := savedPhotoResponse{}
@@ -53,7 +53,7 @@ func (c *client) saveMessagesPhoto(photo, hash string, server int) (int, int) {
 	return resp.Response[0].ID, resp.Response[0].OwnerID
 }
 
-func (c *client) UploadPhoto(reader io.Reader, peerID int) string {
+func (c *Client) UploadPhoto(reader io.Reader, peerID int) string {
 	url, _, _ := c.getMessagesUploadServer(peerID)
 
 	bodyBuf := &bytes.Buffer{}
@@ -83,7 +83,7 @@ func (c *client) UploadPhoto(reader io.Reader, peerID int) string {
 	return fmt.Sprintf("photo%d_%d", ownerID, mediaID)
 }
 
-func (c *client) UploadPhotoFromPath(path string) string {
+func (c *Client) UploadPhotoFromPath(path string) string {
 	file, err := os.Open("/home/danis/projects/go/src/vkapi/examples/зож.jpg")
 	defer file.Close()
 	CheckError(err)
