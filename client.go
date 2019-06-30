@@ -28,7 +28,8 @@ type Client struct {
 	lastRequest time.Time
 
 	workWithPool bool
-	requestsChan chan Request
+	workers *[]*Client
+	workerIndex int
 }
 
 type ServiceClient struct {
@@ -43,20 +44,13 @@ func NewServiceClient(token string) *ServiceClient {
 	return &ServiceClient{*NewClient(token)}
 }
 
-func (c *Client) ActivatePool(requestsChan chan Request) {
-	c.requestsChan = requestsChan
+func (c *Client) ActivatePool(workers *[]*Client) {
 	c.workWithPool = true
-	go c.ListenQuery()
+	c.workers = workers
 }
 
 func (c *Client) DisablePool() {
 	c.workWithPool = false
-}
-
-func (c *Client) ListenQuery() {
-	for req := range c.requestsChan {
-		c.request(req.MethodName, req.params)
-	}
 }
 
 func (c *Client) request(method, params string) []byte {
@@ -79,12 +73,12 @@ func (c *Client) request(method, params string) []byte {
 
 func (c *Client) Request(method, params string) []byte {
 	if !c.workWithPool {
-		return c.request(method, params)
+		c.request(method, params)
 	} else {
-		c.requestsChan <- Request{
-			MethodName: method,
-			params:     params,
+		(*c.workers)[c.workerIndex].request(method, params)
+		c.workerIndex += 1
+		if c.workerIndex == len(*c.workers) {
+			c.workerIndex = 0
 		}
-		return []byte{}
 	}
 }
