@@ -46,6 +46,7 @@ func NewServiceClient(token string) *ServiceClient {
 func (c *Client) ActivatePool(requestsChan chan Request) {
 	c.requestsChan = requestsChan
 	c.workWithPool = true
+	go c.ListenQuery()
 }
 
 func (c *Client) DisablePool() {
@@ -54,7 +55,7 @@ func (c *Client) DisablePool() {
 
 func (c *Client) ListenQuery() {
 	for req := range c.requestsChan {
-		c.Request(req.MethodName, req.params)
+		c.request(req.MethodName, req.params)
 	}
 }
 
@@ -63,6 +64,7 @@ func (c *Client) request(method, params string) []byte {
 	if left < sleepTime {
 		time.Sleep(sleepTime - left)
 	}
+	c.lastRequest = time.Now()
 
 	rURL := getRequestUrl(method, c.token)
 

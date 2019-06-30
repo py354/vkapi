@@ -27,7 +27,10 @@ func main() {
 	// some random client from our pool
 	poolClient := clients[0]
 
-	// done! if one client can handle 20 messages per second, our pool from 3 client can handle 60 messages
+	// done!
+	// if one client can handle 20 messages per second,
+	// our pool from 3 clients can handle 60 messages per second,
+	// and if minimum delay between requests was 50 ms, now it ~16 ms
 
 	// init longpoll and make messages handler
 	inputMessages := make(chan *vkapi.Message, 100)
