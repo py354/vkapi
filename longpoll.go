@@ -73,10 +73,13 @@ func (lp *Longpoll) initVKParams() {
 	lp.TS = response.Response.Ts
 }
 
-func (lp *Longpoll) getEvents() longpollResponse {
+func (lp *Longpoll) getEvents() (longpollResponse, error) {
 	url := fmt.Sprintf("%s?act=a_check&key=%s&ts=%s&wait=25", lp.Server, lp.Key, lp.TS)
 	r, err := http.Get(url)
-	CheckError(err)
+	if err != nil {
+		return longpollResponse{}, err
+	}
+
 	defer r.Body.Close()
 
 	answer, err := ioutil.ReadAll(r.Body)
@@ -85,7 +88,7 @@ func (lp *Longpoll) getEvents() longpollResponse {
 	response := longpollResponse{}
 	err = json.Unmarshal(answer, &response)
 	CheckError(err)
-	return response
+	return response, nil
 }
 
 // support only "message_new" event from users
@@ -93,8 +96,8 @@ func (lp *Longpoll) Listen(inputMessages chan<- *Message) {
 	lp.initVKParams()
 
 	for {
-		response := lp.getEvents()
-		if response.Failed != 0 || response.Ts == "" {
+		response, err := lp.getEvents()
+		if response.Failed != 0 || response.Ts == "" || err != nil {
 			lp.initVKParams()
 			continue
 		}

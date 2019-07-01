@@ -73,12 +73,12 @@ func (c *Client) request(method, params string) []byte {
 
 func (c *Client) Request(method, params string) []byte {
 	if !c.workWithPool {
-		c.request(method, params)
+		return c.request(method, params)
 	} else {
-		(*c.workers)[c.workerIndex].request(method, params)
 		c.workerIndex += 1
 		if c.workerIndex == len(*c.workers) {
 			c.workerIndex = 0
 		}
+		return (*c.workers)[c.workerIndex].request(method, params)
 	}
 }

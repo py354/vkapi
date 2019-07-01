@@ -7,7 +7,7 @@ import (
 
 // messageTypes: sticker, text + kb + attachment
 func (c *Client) SendSticker(peerID int, stickerID int) []byte {
-	params := fmt.Sprintf("peer_id=%d&sticker_id=%d", peerID, stickerID)
+	params := fmt.Sprintf("peer_id=%d&sticker_id=%d&random_id=&", peerID, stickerID)
 	return c.Request("messages.send", params)
 }
 
