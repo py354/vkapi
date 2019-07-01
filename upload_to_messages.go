@@ -44,7 +44,7 @@ func (c *Client) getMessagesUploadServer(peerID int) (url string, albumID, group
 	return response.Response.Url, response.Response.AlbumID, response.Response.GroupID
 }
 
-func (c *Client) saveMessagesPhoto(photo, hash string, server int) (int, int) {
+func (c *Client) saveMessagesPhoto(photo, hash string, server int) (mediaID, ownerID int) {
 	params := fmt.Sprintf("photo=%s&server=%d&hash=%s", photo, server, hash)
 	r := c.Request("photos.saveMessagesPhoto", params)
 	resp := savedPhotoResponse{}
@@ -53,9 +53,7 @@ func (c *Client) saveMessagesPhoto(photo, hash string, server int) (int, int) {
 	return resp.Response[0].ID, resp.Response[0].OwnerID
 }
 
-func (c *Client) UploadPhoto(reader io.Reader, peerID int) string {
-	url, _, _ := c.getMessagesUploadServer(peerID)
-
+func UploadPhotoToServer(reader io.Reader, url string) (server int, photo, hash string){
 	bodyBuf := &bytes.Buffer{}
 	bodyWriter := multipart.NewWriter(bodyBuf)
 	fileWriter, err := bodyWriter.CreateFormFile("photo", "test.png")
@@ -78,15 +76,20 @@ func (c *Client) UploadPhoto(reader io.Reader, peerID int) string {
 	var uploaded uploadPhotoWallResponse
 	err = json.Unmarshal(body, &uploaded)
 	CheckError(err)
-
-	mediaID, ownerID := c.saveMessagesPhoto(uploaded.Photo, uploaded.Hash, uploaded.Server)
-	return fmt.Sprintf("photo%d_%d", ownerID, mediaID)
+	return uploaded.Server, uploaded.Photo, uploaded.Hash
 }
 
-func (c *Client) UploadPhotoFromPath(path string) string {
-	file, err := os.Open("/home/danis/projects/go/src/vkapi/examples/зож.jpg")
+func (c *Client) UploadPhotoToMessages(reader io.Reader, peerID int) (ownerID, mediaID int) {
+	url, _, _ := c.getMessagesUploadServer(peerID)
+	server, photo, hash := UploadPhotoToServer(reader, url)
+	mediaID, ownerID = c.saveMessagesPhoto(photo, hash, server)
+	return
+}
+
+func (c *Client) UploadPhotoToMessagesFromPath(path string, peerID int) (ownerID, mediaID int) {
+	file, err := os.Open(path)
 	defer file.Close()
 	CheckError(err)
 
-	return c.UploadPhoto(file, 222691811)
+	return c.UploadPhotoToMessages(file, peerID)
 }

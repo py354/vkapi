@@ -36,8 +36,16 @@ type ServiceClient struct {
 	Client
 }
 
+type UserClient struct {
+	Client
+}
+
 func NewClient(token string) *Client {
 	return &Client{token: token}
+}
+
+func NewUserClient(token string) *UserClient {
+	return &UserClient{*NewClient(token)}
 }
 
 func NewServiceClient(token string) *ServiceClient {
@@ -68,6 +76,9 @@ func (c *Client) request(method, params string) []byte {
 	CheckError(err)
 
 	binAnswer, err := ioutil.ReadAll(r.Body)
+	if strings.Contains(string(binAnswer), "err") {
+		fmt.Println(string(binAnswer))
+	}
 	return binAnswer
 }
 

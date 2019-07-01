@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"vkapi"
@@ -8,7 +9,7 @@ import (
 
 func main() {
 	// token from your group (need permission to send messages)
-	token := "cd9407e6d0945b647c874fe553bf32e0021cb6c2c5366ee28e963c0b334fac867113f875eb347ff08fa92"
+	token := "eb9dc863b36e36683cd2a18f976705171011e0b9c9952f33121997940384e7f3047d63b877f881f132289"
 
 	// your user_id
 	peerID := 222691811
@@ -21,13 +22,13 @@ func main() {
 	log.Println(string(response))
 
 	// open image
-	file, err := os.Open("path_to_image.png")
+	file, err := os.Open("examples/photo.png")
 	vkapi.CheckError(err)
 
 	// download it to vk server
-	attachment := c.UploadPhoto(file, peerID)
+	ownerID, mediaID := c.UploadPhotoToMessages(file, peerID)
 
 	// send this image with message
-	response = c.SendMessage(peerID, "", "", attachment)
+	response = c.SendMessage(peerID, "", "", fmt.Sprintf("photo%d_%d", ownerID, mediaID))
 	log.Println(string(response))
 }
