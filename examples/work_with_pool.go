@@ -11,18 +11,7 @@ func main() {
 	}
 
 	// register clients
-	clients := make([]*vkapi.Client, 0, 3)
-	for _, token := range tokens {
-		clients = append(clients, vkapi.NewClient(token))
-	}
-
-	// add client to pool
-	for _, client := range clients {
-		client.ActivatePool(&clients)
-	}
-
-	// some random client from our pool
-	poolClient := clients[0]
+	pool := vkapi.NewPool(tokens)
 
 	// done!
 	// if one client can handle 20 messages per second,
@@ -35,6 +24,6 @@ func main() {
 	go lp.Listen(inputMessages)
 
 	for msg := range inputMessages {
-		poolClient.SendMessage(msg.PeerID, "hello", "", "")
+		pool.SendMessage(msg.PeerID, "hello", "", "")
 	}
 }

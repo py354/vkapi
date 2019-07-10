@@ -32,12 +32,37 @@ type Client struct {
 	workerIndex int
 }
 
+type ClientsPool struct {
+	*Client
+	clients []*Client
+}
+
 type ServiceClient struct {
 	Client
 }
 
 type UserClient struct {
 	Client
+}
+
+func NewPool(tokens []string) ClientsPool {
+	if len(tokens) == 0 {
+		panic("need at least one token")
+	}
+
+	pool := ClientsPool{
+		Client:  nil,
+		clients: make([]*Client, 0, 10),
+	}
+
+	for _, token := range tokens {
+		c := NewClient(token)
+		c.ActivatePool(&pool.clients)
+		pool.clients = append(pool.clients, c)
+	}
+
+	pool.Client = pool.clients[0]
+	return pool
 }
 
 func NewClient(token string) *Client {
