@@ -10,7 +10,7 @@ type getUserNameResponse struct {
 	Response []getUserNameData `json:"response"`
 }
 
-func (c *Client) GetUserName(userID int) string {
+func (c *ServiceClient) GetUserName(userID int) string {
 	jsonR := c.Request("users.get", "user_ids="+strconv.Itoa(userID))
 	response := getUserNameResponse{}
 	err := json.Unmarshal(jsonR, &response)
