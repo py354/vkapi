@@ -94,9 +94,6 @@ func (c *Client) request(method, params string) []byte {
 	c.lastRequest = time.Now()
 
 	rURL := getRequestUrl(method, c.token)
-	fmt.Println(rURL)
-	fmt.Printf("%#v\n\n", params)
-
 	reader := strings.NewReader(params)
 	r, err := http.Post(rURL, "application/x-www-form-urlencoded", reader)
 	defer r.Body.Close()
@@ -105,6 +102,8 @@ func (c *Client) request(method, params string) []byte {
 	binAnswer, err := ioutil.ReadAll(r.Body)
 	if strings.Contains(string(binAnswer), "err") {
 		fmt.Println(string(binAnswer))
+		fmt.Println(rURL)
+		fmt.Printf("%#v\n\n", params)
 	}
 	return binAnswer
 }
