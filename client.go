@@ -94,6 +94,7 @@ func (c *Client) request(method, params string) []byte {
 	c.lastRequest = time.Now()
 
 	rURL := getRequestUrl(method, c.token)
+	fmt.Println(rURL)
 
 	reader := strings.NewReader(params)
 	r, err := http.Post(rURL, "application/x-www-form-urlencoded", reader)
